@@ -24,12 +24,22 @@ export default class App extends Component {
     // this.handleJWTChange(this.handleJWTChange.bind(this));
   }
 
+  componentDidMount() {
+    let t = window.localStorage.getItem("jwt");
+    if (t) {
+      if (this.state.jwt === "") {
+        this.setState({ jwt: JSON.parse(t) });
+      }
+    }
+  }
+
   handleJWTChange = (jwt) => {
     this.setState({ jwt: jwt });
   };
 
   logout = () => {
     this.setState({ jwt: "" });
+    window.localStorage.removeItem("jwt");
   };
 
   render() {
@@ -102,10 +112,18 @@ export default class App extends Component {
                   <Genres />
                 </Route>
 
-                <Route path="/admin/movie/:id" component={EditMovie} />
-                <Route path="/admin">
-                  <Admin />
-                </Route>
+                <Route
+                  path="/admin/movie/:id"
+                  component={(props) => (
+                    <EditMovie {...props} jwt={this.state.jwt} />
+                  )}
+                />
+                <Route
+                  path="/admin"
+                  component={(props) => (
+                    <Admin {...props} jwt={this.state.jwt} />
+                  )}
+                />
                 <Route path="/">
                   <Home />
                 </Route>

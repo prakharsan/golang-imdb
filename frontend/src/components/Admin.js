@@ -9,6 +9,11 @@ export default class Admin extends Component {
   };
 
   componentDidMount() {
+    console.log("This is jwt", this.props.jwt);
+    if (this.props.jwt === "") {
+      this.props.history.push({ pathname: "/login" });
+      return;
+    }
     fetch("http://localhost:4000/v1/movies")
       // .then((response) => response.json())
       .then((response) => {

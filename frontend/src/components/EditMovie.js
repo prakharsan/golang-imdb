@@ -74,11 +74,14 @@ export default class EditMovie extends Component {
 
     const data = new FormData(evt.target);
     const payload = Object.fromEntries(data.entries());
-    console.log("This is data", payload);
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("Authorization", "Bearer " + this.props.jwt);
 
     const requestOptions = {
       method: "POST",
       body: JSON.stringify(payload),
+      headers: myHeaders,
     };
 
     fetch("http://localhost:4000/v1/admin/editmovie", requestOptions)
@@ -92,6 +95,46 @@ export default class EditMovie extends Component {
           this.props.history.push({ pathname: "/admin" });
         }
       });
+  };
+
+  confirmDelete = (e) => {
+    confirmAlert({
+      title: "Delete Movie?",
+      message: "Are you sure?",
+      buttons: [
+        {
+          label: "Yes",
+          onClick: () => {
+            const myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            myHeaders.append("Authorization", "Bearer " + this.props.jwt);
+
+            fetch(
+              "http://localhost:4000/v1/admin/deletemovie/" +
+                this.state.movie.id,
+              { method: "GET", headers: myHeaders }
+            )
+              .then((response) => response.json)
+              .then((data) => {
+                if (data.error) {
+                  this.setState({
+                    alert: {
+                      type: "alert-danger",
+                      message: data.error.message,
+                    },
+                  });
+                } else {
+                  this.props.history.push({ pathname: "/admin" });
+                }
+              });
+          },
+        },
+        {
+          label: "No",
+          onClick: () => {},
+        },
+      ],
+    });
   };
 
   handleChange = (evt) => {
@@ -110,6 +153,10 @@ export default class EditMovie extends Component {
   }
 
   componentDidMount() {
+    if (this.props.jwt === "") {
+      this.props.history.push({ pathname: "/login" });
+      return;
+    }
     const id = this.props.match.params.id;
     if (id > 0) {
       fetch("http://localhost:4000/v1/movie/" + id)
@@ -148,41 +195,6 @@ export default class EditMovie extends Component {
     }
   }
 
-  confirmDelete = (e) => {
-    confirmAlert({
-      title: "Delete Movie?",
-      message: "Are you sure?",
-      buttons: [
-        {
-          label: "Yes",
-          onClick: () => {
-            fetch(
-              "http://localhost:4000/v1/admin/deletemovie/" +
-                this.state.movie.id,
-              { method: "GET" }
-            )
-              .then((response) => response.json)
-              .then((data) => {
-                if (data.error) {
-                  this.setState({
-                    alert: {
-                      type: "alert-danger",
-                      message: data.error.message,
-                    },
-                  });
-                } else {
-                  this.props.history.push({ pathname: "/admin" });
-                }
-              });
-          },
-        },
-        {
-          label: "No",
-          onClick: () => {},
-        },
-      ],
-    });
-  };
   render() {
     let { movie, isLoaded, error } = this.state;
 
