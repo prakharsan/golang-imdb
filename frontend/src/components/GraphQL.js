@@ -19,7 +19,9 @@ export default class GraphQL extends Component {
 
   handleChange = (evt) => {
     let value = evt.target.value;
-    this.setState((prevState) => ({ searchTerm: value }));
+    this.setState({ searchTerm: value }, () => {
+      this.performSearch();
+    });
     this.performSearch();
   };
 
@@ -47,12 +49,10 @@ export default class GraphQL extends Component {
     fetch("http://localhost:4000/v1/graphql", requestOptions)
       .then((response) => response.json())
       .then((data) => {
-        console.log("this is data", data);
         let theList = Object.values(data.data.search);
         return theList;
       })
       .then((theList) => {
-        console.log(theList);
         if (theList.length > 0) {
           this.setState({
             movies: theList,
@@ -89,12 +89,10 @@ export default class GraphQL extends Component {
     fetch("http://localhost:4000/v1/graphql", requestOptions)
       .then((response) => response.json())
       .then((data) => {
-        console.log("This is data in list", data);
         let theList = Object.values(data.data.list);
         return theList;
       })
       .then((theList) => {
-        console.log(theList);
         this.setState({
           movies: theList,
         });
