@@ -52,9 +52,7 @@ export default class OneMovie extends Component {
     } else {
       return (
         <Fragment>
-          <h2>
-            Movie: {movie.title} {movie.id}
-          </h2>
+          <h2>Movie: {movie.title}</h2>
 
           {movie.poster !== "" && (
             <div>
